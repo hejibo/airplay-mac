@@ -7,12 +7,18 @@
 //
 
 #import "AppDelegate.h"
-#import "HTTPServer.h"
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 @implementation AppDelegate
 
 - (void)awakeFromNib {
-  // Insert code here to initialize your application
+  // Setup standard logging to console
+  [DDLog addLogger:[DDTTYLogger sharedInstance]];
+  
+  [self initializeServer];
   [self setupNavigationItem];
 }
 
@@ -21,18 +27,37 @@
   self.statusItem = [bar statusItemWithLength:NSVariableStatusItemLength];
   
   [self.statusItem setTitle: @"Server"];
-  
   [self.statusItem setMenu:self.barMenu];
   [self.statusItem setHighlightMode:YES];
 }
 
+- (void)initializeServer {
+  self.server = [[HTTPServer alloc] init];
+  NSString *docRoot = [@"~/Sites" stringByExpandingTildeInPath];
+  [self.server setDocumentRoot:docRoot];
+  
+  [self.server setPort:8080];
+}
+
 - (IBAction)startServer:(id)sender {
-  NSLog(@"starting server...");
+  if (![self.server isRunning]) {
+    DDLogInfo(@"Starting Server...");
+    
+    NSError *error = nil;
+    if(![self.server start:&error]) {
+      DDLogError(@"Error starting HTTP Server: %@", error);
+    }
+  }
 }
 
 - (IBAction)stopServer:(id)sender {
-  NSLog(@"stopping server...");
-}
+  if ([self.server isRunning]) {
+    DDLogInfo(@"Stopping server...");
+    [self.server stop];
+    
+    DDLogInfo(@"Server stopped.");
+  }
+ }
 
 
 

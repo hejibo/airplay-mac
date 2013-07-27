@@ -7,11 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "HTTPServer.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
 @property (nonatomic, strong) NSStatusItem *statusItem;
 @property (nonatomic, strong) IBOutlet NSMenu *barMenu;
+@property (nonatomic, strong) HTTPServer *server;
 
 
 /**
@@ -20,6 +22,13 @@
  * !Sets up the navigation menu and adds it to the navigation bar
  */
 - (void)setupNavigationItem;
+
+/**
+ * initializeServer
+ *
+ * !Creates + initializes the server property. Sets up settings.
+ */
+- (void)initializeServer;
 
 /**
  * startServer
